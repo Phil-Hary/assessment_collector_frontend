@@ -6,10 +6,13 @@ import { Col, Row, Select, Table, Typography } from "antd"
 import { useEffect, useState } from "react"
 
 const Responses = () => {
+    /**
+     * This component renders responses page, where in user can select a form and see the responses received for that form
+    */
     const formService = FormService.getService()
-    const [ forms, setForms ] = useState([])
-    const [ currentForm, setCurrentForm ] = useState()
-    const [ formResponses, setFormResponses] = useState([])
+    const [forms, setForms] = useState([])
+    const [currentForm, setCurrentForm] = useState()
+    const [formResponses, setFormResponses] = useState([])
 
     const { Title } = Typography
 
@@ -24,7 +27,7 @@ const Responses = () => {
 
     useEffect(() => {
         const getFormResponses = async () => {
-            if(currentForm){
+            if (currentForm) {
                 const { data } = await formService.getFormResponses(currentForm)
                 setFormResponses(data.data)
             }
@@ -34,7 +37,7 @@ const Responses = () => {
     }, [currentForm])
 
     const getOptions = (forms) => {
-        const options = forms.map(({name: label, slug: value}) => ({label, value}))
+        const options = forms.map(({ name: label, slug: value }) => ({ label, value }))
         return options
     }
 
@@ -45,8 +48,8 @@ const Responses = () => {
     const getTableColumns = () => {
         const tableData = formResponses[0]
         const tableColumns = []
-        
-        for(let key of Object.keys(tableData)) {
+
+        for (let key of Object.keys(tableData)) {
             tableColumns.push({
                 "title": key.replaceAll("_", " "),
                 "dataIndex": key,
@@ -65,14 +68,14 @@ const Responses = () => {
                     <Title level={4}>Form Name</Title>
                 </Col>
                 <Col span={4}>
-                    <Select options={forms && getOptions(forms)} onChange={onSelectChange} style={{ width: "100%"}}/>
+                    <Select options={forms && getOptions(forms)} onChange={onSelectChange} style={{ width: "100%" }} />
                 </Col>
             </Row>
             <Row>
                 <Col span={24}>
                     {
                         formResponses.length > 0 && (
-                            <Table dataSource={formResponses} columns={getTableColumns()}/>
+                            <Table dataSource={formResponses} columns={getTableColumns()} />
                         )
                     }
                 </Col>

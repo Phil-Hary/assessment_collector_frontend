@@ -7,6 +7,9 @@ import styles from "./Dashboard.module.css"
 import { useRouter } from "next/navigation"
 
 const Dashboard = () => {
+    /**
+     * This component renders the dashboard page
+    */
     const { Title } = Typography;
     const router = useRouter()
     const [ messageApi, contextHolder ] = message.useMessage();

@@ -17,15 +17,18 @@ import { FormUtils } from "@/utils"
 const { Text, Title } = Typography;
 
 const FormRenderer = () => {
+    /**
+     * This component renders the form, by fetching the form config from the backend
+    */
     const formService = FormService.getService()
 
     const router = useRouter()
     const params = useParams()
 
-    const [ form ] = Form.useForm()
-    const [ formMeta, setFormMeta ] = useState({})
-    const [ messageApi, contextHolder ] = message.useMessage();
-    const [ isLoading, setLoading ] = useState(false)
+    const [form] = Form.useForm()
+    const [formMeta, setFormMeta] = useState({})
+    const [messageApi, contextHolder] = message.useMessage();
+    const [isLoading, setLoading] = useState(false)
 
     useEffect(() => {
         const getFormConfig = async () => {
@@ -34,14 +37,17 @@ const FormRenderer = () => {
             setFormMeta(data.data)
             setLoading(prevState => false)
         }
-        
+
         (async () => await getFormConfig())()
     }, [])
 
-    
-    const { title, subTitle, layout, formFields, onSubmission, onCancel } = formMeta?.pages?.[0]?.content || {}
 
-    const renderFormFields = (formFields=[]) => {
+    const { title, subTitle, layout, formFields, onSubmission, onCancel } = formMeta?.pages?.[0]?.content || {}
+    
+    const renderFormFields = (formFields = []) => {
+        /**
+         * This method fetches the form fields to be rendered
+        */
         const uiFormFields = []
 
         formFields.length && formFields.forEach((formField) => {
@@ -51,7 +57,10 @@ const FormRenderer = () => {
         return uiFormFields
     }
 
-    const onFinishHandler = (values, {endpoint, requestMethods, onSuccess, onError}) => {
+    const onFinishHandler = (values, { endpoint, requestMethods, onSuccess, onError }) => {
+        /**
+         * This method is the handler for the submit button
+        */
         try {
             const componentTypes = getComponentTypes(formFields)
             const transformedResponse = FormUtils.responseTransformer(values, componentTypes)
@@ -64,66 +73,72 @@ const FormRenderer = () => {
         } catch {
             messageApi.error(onError.toast);
         }
-        
+
     }
 
     const onCancelHandler = () => {
+        /**
+         * This method is the handler for the cancel button
+        */
         router.push("/dashboard")
     }
 
     const getComponentTypes = (formFields) => {
+        /**
+         * This method returns the componentType mapping
+        */
         const componentTypes = {}
 
-        for(let formField of formFields) {
+        for (let formField of formFields) {
             componentTypes[formField.fieldName] = formField.componentType
         }
 
         return componentTypes
     }
-    
+
     return (
         <Row className={styles.formBackground}>
             {contextHolder}
             {isLoading ? (
-                    <div className={styles.spinner}>
-                        <Spin size='large' />
-                    </div>
-                ) : (
+                <div className={styles.spinner}>
+                    <Spin size='large' />
+                </div>
+            ) : (
                 <Col offset={6} span={12} className={styles.form}>
-                <Form
-                    name="control"
-                    form={form}
-                    layout={LAYOUT[layout]}
-                    onFinish={(values) => onFinishHandler(values, onSubmission.apiConfig)}
-                >
-                    <Title level={2} style={{ marginBottom: "2px"}}>{title}</Title>
-                    <div style={{ marginBottom: "30px"}}><Text type="secondary">{subTitle}</Text></div>
-                    
+                    <Form
+                        name="control"
+                        form={form}
+                        layout={LAYOUT[layout]}
+                        onFinish={(values) => onFinishHandler(values, onSubmission.apiConfig)}
+                    >
+                        <Title level={2} style={{ marginBottom: "2px" }}>{title}</Title>
+                        <div style={{ marginBottom: "30px" }}><Text type="secondary">{subTitle}</Text></div>
 
-                    {renderFormFields(formFields)}
 
-                    {
-                        onSubmission && (
-                            <>
-                                <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
-                                    <Flex>
-                                        <Col span={11}>
-                                            <Button htmlType="button" onClick={onCancelHandler} block>
-                                                Cancel
-                                            </Button>
-                                        </Col>
-                                        <Col span={12} offset={1}>
-                                            <Button type="primary" htmlType="submit" block>
-                                                {onSubmission.label}
-                                            </Button>
-                                        </Col>
-                                    </Flex>
-                                </Form.Item>
-                            </>
-                    )}
-                    
-                </Form>
-            </Col>)}
+                        {renderFormFields(formFields)}
+
+                        {
+                            onSubmission && (
+                                <>
+                                    <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+                                        <Flex>
+                                            <Col span={11}>
+                                                <Button htmlType="button" onClick={onCancelHandler} block>
+                                                    Cancel
+                                                </Button>
+                                            </Col>
+                                            <Col span={12} offset={1}>
+                                                <Button type="primary" htmlType="submit" block>
+                                                    {onSubmission.label}
+                                                </Button>
+                                            </Col>
+                                        </Flex>
+                                    </Form.Item>
+                                </>
+                            )}
+
+                    </Form>
+                </Col>)}
         </Row>
     )
 }
