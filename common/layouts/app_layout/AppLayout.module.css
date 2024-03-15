@@ -1,0 +1,9 @@
+.layout {
+    padding: 24px 10px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.layoutContent {
+    height: 84vh;
+}
